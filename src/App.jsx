@@ -55,7 +55,7 @@ function App() {
   const isTeacher = user.role === 'teacher'
 
   return (
-    <div className="app">
+    <div className="app animate-fade-in">
       <nav className="navbar">
         <div className="navbar-content">
           <div className="logo">

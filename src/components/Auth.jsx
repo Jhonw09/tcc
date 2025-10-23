@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 function Auth({ onLogin }) {
   const [isLogin, setIsLogin] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -17,7 +18,7 @@ function Auth({ onLogin }) {
     })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     
     if (!isLogin && formData.password !== formData.confirmPassword) {
@@ -25,25 +26,29 @@ function Auth({ onLogin }) {
       return
     }
 
-    // Aqui você conectará com seu backend
-    const userData = {
-      name: formData.name || formData.email.split('@')[0],
-      email: formData.email,
-      role: formData.role || 'student'
-    }
+    setIsLoading(true)
     
-    onLogin(userData)
+    setTimeout(() => {
+      const userData = {
+        name: formData.name || formData.email.split('@')[0],
+        email: formData.email,
+        role: formData.role || 'student'
+      }
+      
+      onLogin(userData)
+      setIsLoading(false)
+    }, 1500)
   }
 
   return (
     <div className="auth-container">
-      <div className="auth-card">
+      <div className="auth-card animate-fade-in">
         <div className="auth-header">
           <h1>
             <span className="logo-text">StudyConnect</span>
             <span className="logo-plus">+</span>
           </h1>
-          <p>{isLogin ? 'Entre na sua conta' : 'Crie sua conta'}</p>
+          <p>{isLogin ? 'Entre na sua conta e continue aprendendo' : 'Crie sua conta e comece sua jornada'}</p>
         </div>
 
         <form onSubmit={handleSubmit}>
@@ -58,7 +63,7 @@ function Auth({ onLogin }) {
                   value={formData.name}
                   onChange={handleChange}
                   required={!isLogin}
-                  placeholder="Seu nome completo"
+                  placeholder="Digite seu nome completo"
                 />
               </div>
               <div className="form-group">
@@ -69,8 +74,9 @@ function Auth({ onLogin }) {
                   value={formData.role || 'student'}
                   onChange={handleChange}
                   required={!isLogin}
+                  style={{ cursor: 'pointer' }}
                 >
-                  <option value="student">Aluno</option>
+                  <option value="student">Estudante</option>
                   <option value="teacher">Professor</option>
                 </select>
               </div>
@@ -99,7 +105,8 @@ function Auth({ onLogin }) {
               value={formData.password}
               onChange={handleChange}
               required
-              placeholder="********"
+              placeholder="Digite sua senha"
+              minLength={isLogin ? undefined : 6}
             />
           </div>
 
@@ -113,20 +120,38 @@ function Auth({ onLogin }) {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 required={!isLogin}
-                placeholder="********"
+                placeholder="Confirme sua senha"
+                minLength={6}
               />
             </div>
           )}
 
-          <button type="submit" className="btn-primary">
-            {isLogin ? 'Entrar' : 'Criar Conta'}
+          <button type="submit" className="btn-primary" disabled={isLoading}>
+            {isLoading ? (
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--spacing-sm)' }}>
+                <div style={{ 
+                  width: '16px', 
+                  height: '16px', 
+                  border: '2px solid rgba(255, 255, 255, 0.3)', 
+                  borderTop: '2px solid white', 
+                  borderRadius: '50%', 
+                  animation: 'spin 1s linear infinite' 
+                }}></div>
+                {isLogin ? 'Entrando...' : 'Criando conta...'}
+              </div>
+            ) : (
+              isLogin ? 'Entrar' : 'Criar Conta'
+            )}
           </button>
         </form>
 
         <div className="auth-switch">
-          {isLogin ? 'Não tem uma conta? ' : 'Já tem uma conta? '}
-          <button onClick={() => setIsLogin(!isLogin)}>
-            {isLogin ? 'Cadastre-se' : 'Faça login'}
+          {isLogin ? 'Novo por aqui? ' : 'Já tem uma conta? '}
+          <button onClick={() => {
+            setIsLogin(!isLogin)
+            setFormData({ name: '', email: '', password: '', confirmPassword: '', role: 'student' })
+          }}>
+            {isLogin ? 'Cadastre-se gratuitamente' : 'Faça login'}
           </button>
         </div>
       </div>

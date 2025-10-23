@@ -350,15 +350,15 @@ void inserir(int[] array, int valor, int posicao) {
     }
   }
 
-  const course = courseData[course.id] || courseData[1]
-  const lesson = course.lessons[currentLesson]
+  const currentCourse = courseData[course.id] || courseData[1]
+  const lesson = currentCourse.lessons[currentLesson]
 
   const handleCompleteLesson = () => {
     const newCompleted = new Set(completedLessons)
     newCompleted.add(currentLesson)
     setCompletedLessons(newCompleted)
     
-    if (currentLesson < course.lessons.length - 1) {
+    if (currentLesson < currentCourse.lessons.length - 1) {
       setCurrentLesson(currentLesson + 1)
     }
   }
@@ -370,27 +370,27 @@ void inserir(int[] array, int valor, int posicao) {
           ← Voltar
         </button>
         <div>
-          <h1>{course.title}</h1>
-          <p>{course.description}</p>
+          <h1>{currentCourse.title}</h1>
+          <p>{currentCourse.description}</p>
         </div>
       </div>
 
       <div className="course-progress">
         <div className="progress-info">
-          <span>Aula {currentLesson + 1} de {course.lessons.length}</span>
-          <span>{Math.round(((completedLessons.size) / course.lessons.length) * 100)}% concluído</span>
+          <span>Aula {currentLesson + 1} de {currentCourse.lessons.length}</span>
+          <span>{Math.round(((completedLessons.size) / currentCourse.lessons.length) * 100)}% concluído</span>
         </div>
         <div className="progress-bar">
           <div 
             className="progress-fill" 
-            style={{ width: `${(completedLessons.size / course.lessons.length) * 100}%` }}
+            style={{ width: `${(completedLessons.size / currentCourse.lessons.length) * 100}%` }}
           />
         </div>
       </div>
 
       <div className="lesson-sidebar">
         <h3>Aulas do Curso</h3>
-        {course.lessons.map((lessonItem, index) => (
+        {currentCourse.lessons.map((lessonItem, index) => (
           <div 
             key={index}
             className={`lesson-item ${index === currentLesson ? 'active' : ''} ${completedLessons.has(index) ? 'completed' : ''}`}
@@ -434,7 +434,7 @@ void inserir(int[] array, int valor, int posicao) {
             {completedLessons.has(currentLesson) ? 'Aula Concluída' : 'Marcar como Concluída'}
           </button>
           
-          {currentLesson < course.lessons.length - 1 && (
+          {currentLesson < currentCourse.lessons.length - 1 && (
             <button 
               className="btn"
               onClick={() => setCurrentLesson(currentLesson + 1)}
