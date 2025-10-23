@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import api from '../api/axios'
 
 function Auth({ onLogin }) {
   const [isLogin, setIsLogin] = useState(true)
@@ -28,16 +29,32 @@ function Auth({ onLogin }) {
 
     setIsLoading(true)
     
-    setTimeout(() => {
-      const userData = {
-        name: formData.name || formData.email.split('@')[0],
-        email: formData.email,
-        role: formData.role || 'student'
+    try {
+      if (isLogin) {
+        const response = await api.post('v1/usuario', {
+          email: formData.email,
+          password: formData.password
+        })
+        onLogin(response.data)
+      } else {
+        const response = await api.post('v1/usuario', {
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          role: formData.role
+        })
+        onLogin(response.data)
       }
-      
-      onLogin(userData)
+    } catch (error) {
+      console.error('Erro:', error)
+      if (error.code === 'ERR_NETWORK' || error.message.includes('Network Error')) {
+        alert('Backend não está respondendo. Verifique se o servidor está rodando em http://localhost:8080')
+      } else {
+        alert(error.response?.data?.message || 'Erro ao processar requisição')
+      }
+    } finally {
       setIsLoading(false)
-    }, 1500)
+    }
   }
 
   return (
